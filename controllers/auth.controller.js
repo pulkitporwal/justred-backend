@@ -98,7 +98,7 @@ const signIn = async (req, res) => {
 
 		user.password = undefined;
 
-		res.cookie("accessToken", token, { httpOnly: true, secure: true });
+		res.cookie("accessToken", token, { httpOnly: true, secure: true, sameSite: 'None' });
 
 		const session = new Session({
 			userId: user._id,
