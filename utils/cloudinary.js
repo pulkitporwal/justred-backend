@@ -2,14 +2,27 @@ import { v2 as cloudinary } from "cloudinary";
 import dotenv from "dotenv";
 import fs from "fs";
 import path from "path";
-import { exec } from "child_process";
+import ffmpegPath from 'ffmpeg-static';
+import { execFile } from 'child_process';
 
 dotenv.config();
 
 function compressVideo(localFilePath, compressedFilePath, targetSizeMB = 100) {
   return new Promise((resolve, reject) => {
-    const command = `ffmpeg -i ${localFilePath} -c:v libx264 -preset slow -crf 23 -c:a aac -b:a 128k -movflags +faststart -vf "scale='min(1920,iw)':'-2'" -fs ${targetSizeMB}M ${compressedFilePath}`;
-    exec(command, (error, stdout, stderr) => {
+    const args = [
+      '-i', localFilePath,
+      '-c:v', 'libx264',
+      '-preset', 'slow',
+      '-crf', '23',
+      '-c:a', 'aac',
+      '-b:a', '128k',
+      '-movflags', '+faststart',
+      '-vf', "scale='min(1920,iw)':'-2'",
+      '-fs', `${targetSizeMB}M`,
+      compressedFilePath
+    ];
+    
+    execFile(ffmpegPath, args, (error, stdout, stderr) => {
       if (error) {
         return reject(error);
       }
